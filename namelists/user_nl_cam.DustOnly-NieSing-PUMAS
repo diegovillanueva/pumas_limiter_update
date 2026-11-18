@@ -1,10 +1,7 @@
 ! Users should add all user specific namelist changes below in the form of 
 ! namelist_var = new_namelist_value 
  
-! Users should add all user specific namelist changes below in the form of 
-! namelist_var = new_namelist_value 
- 
-!-- PPE parameters --!
+! Microphysics process factors
 
 hclas_du_imm = 1
 riming_factor = 1
@@ -23,7 +20,7 @@ Nudge_Times_Per_Day = 4
 
 ! Wind nudging ON (reduced strength to avoid aerosol instability)
 Nudge_Uprof  = 1
-Nudge_Ucoef  = 1 ! weak nudging, otherwise crash!
+Nudge_Ucoef  = 1
 Nudge_Vprof  = 1
 Nudge_Vcoef  = 1
 
@@ -35,7 +32,7 @@ Nudge_Qcoef  = 0.0
 Nudge_PSprof = 0
 Nudge_PScoef = 0.0
 
-! Date range — adjust to simulation period
+! Date range: adjust to the simulation period
 Nudge_Beg_Year  = 2000
 Nudge_Beg_Month = 1
 Nudge_Beg_Day   = 1
@@ -55,18 +52,17 @@ Nudge_Vwin_Ldelta   = 0.001
 Nudge_Vwin_Hindex   = 33.0
 Nudge_Vwin_Hdelta   = 0.001
 
-! for stability
-! smoother and more stable than stepping to next file
+! Linear interpolation in time between nudging files
 Nudge_Force_Opt = 1 ! LINEAR
-! safer than STRONG, especially if stronger settings already crash
+! Weak relaxation time scale
 Nudge_TimeScale_Opt  = 0      ! WEAK
-! update nudging every model step if CAM dt = 1800 s = 30 min
+! Update nudging every model step (CAM dt = 1800 s)
 Model_Times_Per_Day  = 48
 
 !----------------------------------------------------------
 ! Microphysics & output 
 !----------------------------------------------------------
-!! namelist group micro_dv_nl, defined in src/physics/cam/micro_dv_nml.F90
+! namelist group micro_dv_nl, defined in src/physics/cam/micro_dv_nml.F90
 
 factor_HM = 0
 onoff_sip = .false. 
@@ -74,39 +70,35 @@ onoff_sip = .false.
 depr_point_frz = .false.      ! avoid solubility effect deactivating 
 			      ! freezing for warmer temperatures
 
-!! 
-!!! zach_ss8_stopleak # MG23+ 
-!! 
+! Droplet freezing limiter and Niemand singular dust immersion freezing
 
 enable_nimax = .false.
-limfacdu = 0.051                     ! max. aerosol fraction as INP (PUMAS paper 2.22)
+limfacdu = 0.051                     ! maximum dust fraction that may freeze per call
 limfacdu_niemand_singular = .true.
 limfacdu_niemand_factor = 1.0
 limfacdu_niemand_max = 100.0
 
 micro_mg_num_steps = 8                ! see 10.1029/2021MS002776
-naai_het_also_in_mpc = .false.       ! no leak from cirrus to mpc
+naai_het_also_in_mpc = .false.       ! cirrus ice nucleation not applied in mixed-phase clouds
 
-!! 
-!!! zach_ss8_stopleak_oduimm # SDust 
-!! 
+! Dust immersion freezing as the only heterogeneous mixed-phase ice source
 
 
-hclas_du_dep = 0.0  ! onoff_contact_freezing/onoff_sip/rain_freeze/detrainment_ramp_liq = switch
+hclas_du_dep = 0.0
 hclas_du_cnt = 0.0                      
 hclas_bc_imm = 0.0                      
 hclas_bc_dep = 0.0                      
 hclas_bc_cnt = 0.0                      
 
-onoff_contact_freezing = .false.       !! should be FALSE -> simple
-rain_freeze = .false.                   ! should be FALSE -> simple  
-detrainment_ramp_liq = .true.              ! should be TRUE -> liq (clubb)
+onoff_contact_freezing = .false.       ! no contact freezing
+rain_freeze = .false.                   ! no rain freezing
+detrainment_ramp_liq = .true.              ! detrained condensate as liquid (CLUBB)
 
 
 !!         h0   h1   h2   h3  h4
 nhtfrq   = 0, -24, -24 , -24, -1
 mfilt    = 1,   1,    1 , 1,  48
-!!!! h0: month, h1: 3D mass, h2: 2D paths, h3: 3D cosp, h4: hourly 2D prec
+! h0: monthly, h1-h3: daily, h4: hourly precipitation
 
 fincl1 = 'CLD_CAL_TMPICE:A','CLD_CAL_TMPLIQ:A','CLD_CAL_TMPUN:A','CLD_CAL_TMP:A',
          'AODVIS:A','AODDUST:A','AODSO4:A','AODBC:A','AODPOM:A','AODSOA:A','AODSS:A',
@@ -129,26 +121,23 @@ fincl1 = 'CLD_CAL_TMPICE:A','CLD_CAL_TMPLIQ:A','CLD_CAL_TMPUN:A','CLD_CAL_TMP:A'
 
 !
 !
-!!!!!!!! h1: most important daily vert profiles : 2 masses: ice and mass liquid
+! h1: daily vertical profiles of cloud ice and liquid mass
 !
-            ! Daily cloud mass averages for ITF
 fincl2   = 'CLDICE:I','CLDLIQ:I','T:I','CLDTOP:I','QSNOW:I','QRAIN:I'
 
 !
-!!!!!! h3: fincl4: NEW Daily 2D
-!
-!!! (cam/micro_mg_cam.F90 and cam/cloud_diagnostics.F90 and rrtmg/radiation.F90
+! h2: daily 2-D fields
 !
 fincl3   = 'CLDTOP:I','ACTNI:I','ACTNL:I','ACTREI:I','ACTREL:I','FCTL:I','FCTI:I','LWCF:A','SWCF:A','FSNT:A','FSNTC:A','FLNT:A','FLNTC:A','FLNS:A','FLNSC:A','FSNS:A','FSNSC:A','TGCLDIWP:I','TGCLDLWP:I','CDNUMC:I','ICNUMC:I','SCNUMC:I','RDNUMC:I','CDMASS:I','ICMASS:I','SCMASS:I','RDMASS:I','BERGO_PATH:I','BERGSO_PATH:I','QCTEN_PATH:I','QINTEN_PATH:I','NCTEN_PATH:I','NINTEN_PATH:I','QRTEN_PATH:I','QSTEN_PATH:I','NRTEN_PATH:I','NSTEN_PATH:I','FRZIMM_PATH:I','FRZCNT_PATH:I','FRZDEP_PATH:I','PRAO_PATH:I','PSACWSO_PATH:I','PRAIO_PATH:I','PRCO_PATH:I','PRCIO_PATH:I','PRACSO_PATH:I','MELTO_PATH:I','QCSEVAP_PATH:I','QISEVAP_PATH:I','CMEIOUT_PATH:I','EVPRAIN_ST_PATH:I','EVPSNOW_ST_PATH:I'
 !
-!!!!!!!! h3: new top analysis based on COSP
+! h3: daily COSP CALIPSO fields
 !
 fincl4   = 'CLD_CAL_TMPICE:A','CLD_CAL_TMPLIQ:A','CLDTOT_CAL:A'
 !
 
-!!!!!! h4 hourly 2D
+! h4: hourly precipitation
 fincl5   = 'PRECT:I','PRECL:I'
 
-! oPUMAS via interface/cesm215: DustOnly-NieSing (MG2 case cesm215.F2000climo.Sppe.rim_p0_auto_p0_h1_lim_du5pd1_niesing_max100_ndg, user_nl_cam verbatim above)
+! Select PUMAS microphysics (micro_mg_version = 3); the settings above are those of the original MG2 run DustOnly-NieSing
  micro_mg_version = 3
  micro_mg_sub_version = 0

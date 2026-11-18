@@ -25,6 +25,9 @@ model configuration of the `DustOnly-NieSing-PUMAS` simulations.
    - `scripts/apply_pumas_patches.sh`: checks the pins, applies both patch
      sets and copies the ten PUMAS source files into a case.
    - `versions.env`: commit pins.
+   - `LICENSE`, `NOTICE`: BSD 3-Clause License; terms of the modified CESM2 code and of PUMAS.
+   - `CITATION.cff`, `.zenodo.json`: citation and archive metadata.
+   - `SHA256SUMS`: checksums of all tracked files (`sha256sum -c SHA256SUMS`).
 
 ## Usage
 
@@ -34,17 +37,33 @@ cd cesm215 && ./manage_externals/checkout_externals && cd ..
 git clone https://github.com/ESCOMP/PUMAS.git
 git -C PUMAS checkout e7377aeeff15acf28c8edf42e9c50b6e89f7de11
 git clone -b v1.0.0 https://github.com/diegovillanueva/PUMAS_interface_215.git
-git clone https://github.com/diegovillanueva/pumas_limiter_update.git
+git clone -b v1.0.1 https://github.com/diegovillanueva/pumas_limiter_update.git
 
 PUMAS_interface_215/scripts/apply_interface.sh PUMAS cesm215/components/cam
-cesm215/cime/scripts/create_newcase --case my_case --compset F2000climo --res f09_f09_mg17 --run-unsupported
+cesm215/cime/scripts/create_newcase --case my_case --compset F2000climo --res f09_g17 --run-unsupported
 pumas_limiter_update/scripts/apply_pumas_patches.sh PUMAS cesm215/components/cam my_case
 cp pumas_limiter_update/namelists/user_nl_cam.DustOnly-NieSing-PUMAS my_case/user_nl_cam
-cd my_case && ./case.setup && ./case.build && ./case.submit
+cd my_case && ./xmlchange --append CAM_CONFIG_OPTS=-cosp
+./case.setup && ./case.build && ./case.submit
 ```
 
 The namelist uses nudging; set `Nudge_Path` to the directory of the nudging
 files before submitting, or remove the `Nudge_*` entries for a free run.
+The simulations used the grid `f09_g17`, as in mg2_limiter_update. The
+namelist requests COSP fields, hence the `-cosp` build option.
+
+The namelist requests `CLD_CAL_TMPICE` and `CLD_CAL_TMPLIQ`. Stock
+`cam_cesm2_1_rel_60` writes these two fields swapped (ice in
+`CLD_CAL_TMPLIQ`); the fix is in the `cospsimulator_intr.F90` patch of
+[cam6_cosp_calipso_diag](https://github.com/diegovillanueva/cam6_cosp_calipso_diag).
+This repository does not include that fix, and cam6_cosp_calipso_diag is
+tested only with MG2, so swap the two fields when you analyse output of
+this patch set.
+
+The namelist sets `limfacdu = 0.051`, the value used in the original MG2
+runs and in these PUMAS simulations. mg2_limiter_update uses `0.05`, the
+value quoted in Villanueva et al. (in review); see its section
+"Differences from the original runs".
 
 ## Validation
 
@@ -53,8 +72,17 @@ above. The resulting CAM tree and the ten PUMAS files are identical to the
 source compiled for the simulations (comments aside: decorative symbols were
 removed from comment lines).
 
+## Citation
+
+Please cite this software via the Zenodo DOI of the release; the citation
+metadata are in `CITATION.cff`.
+
+## Versions and releases
+
+Release v1.0.2 of mg2_limiter_update and release v1.0.1 of PUMAS_interface_215 change only documentation and metadata; their code is identical to mg2_limiter_update v1.0.1 and PUMAS_interface_215 v1.0.0. Pins to those two code versions in this repository (`versions.env`, Usage) therefore remain valid.
+
 ## Related repositories
 
-- [mg2_limiter_update](https://github.com/diegovillanueva/mg2_limiter_update): the limiter for MG2 microphysics (CESM 2.1.5 default).
+- [mg2_limiter_update](https://github.com/diegovillanueva/mg2_limiter_update): droplet freezing limiter and microphysics switches for MG2 (CESM 2.1.5 default), with the run configurations.
+- [cam6_cosp_calipso_diag](https://github.com/diegovillanueva/cam6_cosp_calipso_diag): COSP, CALIPSO/CloudSat and cloud-top diagnostics, including the fix of the swapped `CLD_CAL_TMPLIQ`/`CLD_CAL_TMPICE` fields.
 - [PUMAS_interface_215](https://github.com/diegovillanueva/PUMAS_interface_215): CAM patches that let CESM 2.1.5 run PUMAS.
-- [pumas_limiter_update](https://github.com/diegovillanueva/pumas_limiter_update): the limiter for PUMAS, applied on top of PUMAS_interface_215.
