@@ -1,0 +1,22 @@
+diff --git a/src/physics/cam/ndrop.F90 b/src/physics/cam/ndrop.F90
+--- a/src/physics/cam/ndrop.F90
++++ b/src/physics/cam/ndrop.F90
+@@ -35,6 +35,10 @@
+ 
+ public ndrop_init, dropmixnuc, activate_modal, loadaer
+ 
++! oPUMAS interface: minimum turbulence vertical velocity (m/s) in dropmixnuc, set from
++! microp_aero_wsub_min_asf (CAM7 name). The default equals the rel_60 hard-coded value.
++real(r8), public :: wmixmin = 0.1_r8
++
+ real(r8), allocatable :: alogsig(:)     ! natl log of geometric standard dev of aerosol
+ real(r8), allocatable :: exp45logsig(:)
+ real(r8), allocatable :: f1(:)          ! abdul-razzak functions of width
+@@ -335,7 +339,6 @@
+ 
+ 
+    real(r8), parameter :: zkmin = 0.01_r8, zkmax = 100._r8
+-   real(r8), parameter :: wmixmin = 0.1_r8        ! minimum turbulence vertical velocity (m/s)
+    real(r8) :: sq2pi
+ 
+    integer  :: i, k, l, m, mm, n

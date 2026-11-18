@@ -1,0 +1,102 @@
+diff --git a/src/physics/cam/microp_aero.F90 b/src/physics/cam/microp_aero.F90
+--- a/src/physics/cam/microp_aero.F90
++++ b/src/physics/cam/microp_aero.F90
+@@ -37,12 +37,14 @@
+ use nucleate_ice_cam, only: use_preexisting_ice, nucleate_ice_cam_readnl, nucleate_ice_cam_register, &
+                             nucleate_ice_cam_init, nucleate_ice_cam_calc
+ 
+-use ndrop,            only: ndrop_init, dropmixnuc
++use ndrop,            only: ndrop_init, dropmixnuc, wmixmin
+ use ndrop_bam,        only: ndrop_bam_init, ndrop_bam_run, ndrop_bam_ccn
+ 
+ use hetfrz_classnuc_cam, only: hetfrz_classnuc_cam_readnl, hetfrz_classnuc_cam_register, hetfrz_classnuc_cam_init, &
+                                hetfrz_classnuc_cam_save_cbaero, hetfrz_classnuc_cam_calc
+ 
++use micro_dv_nml, only: micro_dv_readnl
++
+ use cam_history,      only: addfld, add_default, outfld
+ use cam_logfile,      only: iulog
+ use cam_abortutils,       only: endrun
+@@ -65,6 +67,10 @@
+ real(r8), parameter :: rn_dst4 = 3.026e-6_r8
+ 
+ real(r8) :: bulk_scale    ! prescribed aerosol bulk sulfur scale factor
++real(r8) :: wsub_scale    ! scaling for sub-grid vertical velocity (liquid)
++real(r8) :: wsubi_scale   ! scaling for sub-grid vertical velocity (ice)
++real(r8) :: wsub_min      ! minimum sub-grid vertical velocity (liquid) before scale factor
++real(r8) :: wsubi_min     ! minimum sub-grid vertical velocity (ice)
+ 
+ ! smallest mixing ratio considered in microphysics
+ real(r8), parameter :: qsmall = 1.e-18_r8
+@@ -315,12 +321,19 @@
+ 
+    ! Namelist variables
+    real(r8) :: microp_aero_bulk_scale = 2._r8  ! prescribed aerosol bulk sulfur scale factor
++   ! oPUMAS interface: CAM7 sub-grid vertical velocity controls; defaults reproduce rel_60
++   real(r8) :: microp_aero_wsub_scale   = 1._r8     ! subgrid vertical velocity (liquid) scale factor
++   real(r8) :: microp_aero_wsubi_scale  = 1._r8     ! subgrid vertical velocity (ice) scale factor
++   real(r8) :: microp_aero_wsub_min     = 0.20_r8   ! subgrid vertical velocity (liquid) minimum (before scale factor)
++   real(r8) :: microp_aero_wsub_min_asf = 0.1_r8    ! subgrid vertical velocity (liquid) minimum (after scale factor)
++   real(r8) :: microp_aero_wsubi_min    = 0.001_r8  ! subgrid vertical velocity (ice) minimum
+  
+    ! Local variables
+    integer :: unitn, ierr
+    character(len=*), parameter :: subname = 'microp_aero_readnl'
+ 
+-   namelist /microp_aero_nl/ microp_aero_bulk_scale
++   namelist /microp_aero_nl/ microp_aero_bulk_scale, microp_aero_wsub_scale, microp_aero_wsubi_scale, &
++                             microp_aero_wsub_min, microp_aero_wsub_min_asf, microp_aero_wsubi_min
+    !-----------------------------------------------------------------------------
+ 
+    if (masterproc) then
+@@ -340,13 +353,24 @@
+ #ifdef SPMD
+    ! Broadcast namelist variable
+    call mpibcast(microp_aero_bulk_scale, 1, mpir8, 0, mpicom)
++   call mpibcast(microp_aero_wsub_scale, 1, mpir8, 0, mpicom)
++   call mpibcast(microp_aero_wsubi_scale, 1, mpir8, 0, mpicom)
++   call mpibcast(microp_aero_wsub_min, 1, mpir8, 0, mpicom)
++   call mpibcast(microp_aero_wsub_min_asf, 1, mpir8, 0, mpicom)
++   call mpibcast(microp_aero_wsubi_min, 1, mpir8, 0, mpicom)
+ #endif
+ 
+    ! set local variables
+    bulk_scale = microp_aero_bulk_scale
++   wsub_scale  = microp_aero_wsub_scale
++   wsubi_scale = microp_aero_wsubi_scale
++   wsub_min    = microp_aero_wsub_min
++   wsubi_min   = microp_aero_wsubi_min
++   wmixmin     = microp_aero_wsub_min_asf
+ 
+    call nucleate_ice_cam_readnl(nlfile)
+    call hetfrz_classnuc_cam_readnl(nlfile)
++   call micro_dv_readnl(nlfile)
+ 
+ end subroutine microp_aero_readnl
+ 
+@@ -521,8 +545,8 @@
+    end select
+ 
+    ! Set minimum values above top_lev.
+-   wsub(:ncol,:top_lev-1)  = 0.20_r8
+-   wsubi(:ncol,:top_lev-1) = 0.001_r8
++   wsub(:ncol,:top_lev-1)  = wsub_min
++   wsubi(:ncol,:top_lev-1) = wsubi_min
+ 
+    do k = top_lev, pver
+       do i = 1, ncol
+@@ -542,12 +566,12 @@
+             wsub(i,k)  = dum
+          end select
+ 
+-         wsubi(i,k) = max(0.001_r8, wsub(i,k))
++         wsubi(i,k) = max(wsubi_min, wsub(i,k)) * wsubi_scale
+          if (.not. use_preexisting_ice) then
+             wsubi(i,k) = min(wsubi(i,k), 0.2_r8)
+          endif
+ 
+-         wsub(i,k)  = max(0.20_r8, wsub(i,k))
++         wsub(i,k)  = max(wsub_min, wsub(i,k)) * wsub_scale
+ 
+       end do
+    end do
