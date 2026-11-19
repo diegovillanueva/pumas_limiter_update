@@ -9,7 +9,7 @@ model configuration of the `DustOnly-NieSing-PUMAS` simulations.
 1. CESM 2.1.5, CAM `cam_cesm2_1_rel_60`, PUMAS (ESCOMP/PUMAS `main_cam`,
    commit `e7377aeeff15acf28c8edf42e9c50b6e89f7de11`), all unmodified.
 2. [PUMAS_interface_215](https://github.com/diegovillanueva/PUMAS_interface_215)
-   v1.0.1: lets CAM call PUMAS (`micro_mg_cam`, `wv_sat_methods`,
+   v1.1.1: lets CAM call PUMAS (`micro_mg_cam`, `wv_sat_methods`,
    `check_energy`, namelist group `micro_pumas_nl`).
 3. This repository:
    - `patches/pumas/`: the limiter in `micro_pumas_v1.F90` and
@@ -36,8 +36,8 @@ git clone -b release-cesm2.1.5 https://github.com/ESCOMP/CESM.git cesm215
 cd cesm215 && ./manage_externals/checkout_externals && cd ..
 git clone https://github.com/ESCOMP/PUMAS.git
 git -C PUMAS checkout e7377aeeff15acf28c8edf42e9c50b6e89f7de11
-git clone -b v1.0.1 https://github.com/diegovillanueva/PUMAS_interface_215.git
-git clone -b v1.0.1 https://github.com/diegovillanueva/pumas_limiter_update.git
+git clone -b v1.1.1 https://github.com/diegovillanueva/PUMAS_interface_215.git
+git clone -b v1.0.2 https://github.com/diegovillanueva/pumas_limiter_update.git
 
 PUMAS_interface_215/scripts/apply_interface.sh PUMAS cesm215/components/cam
 cesm215/cime/scripts/create_newcase --case my_case --compset F2000climo --res f09_g17 --run-unsupported
@@ -73,6 +73,14 @@ All patches apply with `git apply --check` to the pinned commits in the order
 above. The resulting CAM tree and the ten PUMAS files are identical to the
 source compiled for the simulations (comments aside: decorative symbols were
 removed from comment lines).
+
+## Changes
+
+- 1.0.2: requires PUMAS_interface_215 v1.1.1, which passes the ice
+  nucleation input `naai` to PUMAS as a tendency [1/kg/s] instead of a
+  number [1/kg]. The DustOnly-NieSing-PUMAS simulations were run with the
+  earlier interface, which overestimates ice nucleation in PUMAS. The
+  patches of this repository are unchanged.
 
 ## Citation
 

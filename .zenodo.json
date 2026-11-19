@@ -1,7 +1,7 @@
 {
   "title": "pumas_limiter_update: droplet freezing limiter for PUMAS cloud microphysics in CESM 2.1.5",
   "description": "Port of the droplet freezing limiter of mg2_limiter_update to the PUMAS cloud microphysics in CESM 2.1.5, applied on top of PUMAS_interface_215. The repository contains patches for PUMAS and CAM, the namelist of the DustOnly-NieSing-PUMAS simulations of Villanueva et al. (in review) and a script that applies both patch sets.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "upload_type": "software",
   "license": "BSD-3-Clause",
   "access_right": "open",
@@ -22,7 +22,7 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "https://github.com/diegovillanueva/pumas_limiter_update/tree/v1.0.1",
+      "identifier": "https://github.com/diegovillanueva/pumas_limiter_update/tree/v1.0.2",
       "relation": "isIdenticalTo",
       "scheme": "url"
     },
