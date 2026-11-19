@@ -9,7 +9,7 @@ model configuration of the `DustOnly-NieSing-PUMAS` simulations.
 1. CESM 2.1.5, CAM `cam_cesm2_1_rel_60`, PUMAS (ESCOMP/PUMAS `main_cam`,
    commit `e7377aeeff15acf28c8edf42e9c50b6e89f7de11`), all unmodified.
 2. [PUMAS_interface_215](https://github.com/diegovillanueva/PUMAS_interface_215)
-   v1.0.0: lets CAM call PUMAS (`micro_mg_cam`, `wv_sat_methods`,
+   v1.0.1: lets CAM call PUMAS (`micro_mg_cam`, `wv_sat_methods`,
    `check_energy`, namelist group `micro_pumas_nl`).
 3. This repository:
    - `patches/pumas/`: the limiter in `micro_pumas_v1.F90` and
@@ -36,7 +36,7 @@ git clone -b release-cesm2.1.5 https://github.com/ESCOMP/CESM.git cesm215
 cd cesm215 && ./manage_externals/checkout_externals && cd ..
 git clone https://github.com/ESCOMP/PUMAS.git
 git -C PUMAS checkout e7377aeeff15acf28c8edf42e9c50b6e89f7de11
-git clone -b v1.0.0 https://github.com/diegovillanueva/PUMAS_interface_215.git
+git clone -b v1.0.1 https://github.com/diegovillanueva/PUMAS_interface_215.git
 git clone -b v1.0.1 https://github.com/diegovillanueva/pumas_limiter_update.git
 
 PUMAS_interface_215/scripts/apply_interface.sh PUMAS cesm215/components/cam
@@ -76,11 +76,10 @@ removed from comment lines).
 
 ## Citation
 
-Please cite this software via the Zenodo DOI of the release; the citation
-metadata are in `CITATION.cff`.
+Please cite this software, [doi:10.5281/zenodo.24365685](https://doi.org/10.5281/zenodo.24365685); the citation metadata are in `CITATION.cff`.
 
 ## Related repositories
 
-- [mg2_limiter_update](https://github.com/diegovillanueva/mg2_limiter_update): droplet freezing limiter and microphysics switches for MG2 (CESM 2.1.5 default), with the run configurations.
-- [cam6_cosp_calipso_diag](https://github.com/diegovillanueva/cam6_cosp_calipso_diag): COSP, CALIPSO/CloudSat and cloud-top diagnostics, including the fix of the swapped `CLD_CAL_TMPLIQ`/`CLD_CAL_TMPICE` fields.
-- [PUMAS_interface_215](https://github.com/diegovillanueva/PUMAS_interface_215): CAM patches that let CESM 2.1.5 run PUMAS.
+- [mg2_limiter_update](https://github.com/diegovillanueva/mg2_limiter_update) ([doi:10.5281/zenodo.24365669](https://doi.org/10.5281/zenodo.24365669)): droplet freezing limiter and microphysics switches for MG2 (CESM 2.1.5 default), with the run configurations.
+- [cam6_cosp_calipso_diag](https://github.com/diegovillanueva/cam6_cosp_calipso_diag) ([doi:10.5281/zenodo.24365675](https://doi.org/10.5281/zenodo.24365675)): COSP, CALIPSO/CloudSat and cloud-top diagnostics, including the fix of the swapped `CLD_CAL_TMPLIQ`/`CLD_CAL_TMPICE` fields.
+- [PUMAS_interface_215](https://github.com/diegovillanueva/PUMAS_interface_215) ([doi:10.5281/zenodo.24365680](https://doi.org/10.5281/zenodo.24365680)): CAM patches that let CESM 2.1.5 run PUMAS.

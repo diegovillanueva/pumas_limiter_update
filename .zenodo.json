@@ -22,19 +22,29 @@
   ],
   "related_identifiers": [
     {
-      "identifier": "https://github.com/diegovillanueva/PUMAS_interface_215",
-      "relation": "requires",
+      "identifier": "https://github.com/diegovillanueva/pumas_limiter_update/tree/v1.0.1",
+      "relation": "isIdenticalTo",
       "scheme": "url"
     },
     {
-      "identifier": "https://github.com/diegovillanueva/mg2_limiter_update",
-      "relation": "isDerivedFrom",
-      "scheme": "url"
+      "identifier": "10.5281/zenodo.24365669",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
     },
     {
-      "identifier": "https://github.com/diegovillanueva/cam6_cosp_calipso_diag",
-      "relation": "isSupplementedBy",
-      "scheme": "url"
+      "identifier": "10.5281/zenodo.24365675",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.24365680",
+      "relation": "references",
+      "scheme": "doi"
+    },
+    {
+      "identifier": "10.5281/zenodo.24365774",
+      "relation": "isSupplementTo",
+      "scheme": "doi"
     }
   ]
 }

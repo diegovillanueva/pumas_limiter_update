@@ -2,7 +2,8 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it using the metadata from this file."
 title: "pumas_limiter_update: droplet freezing limiter for PUMAS cloud microphysics in CESM 2.1.5"
 version: 1.0.1
-date-released: 2026-11-18
+date-released: 2026-11-19
+doi: "10.5281/zenodo.24365685"
 license: BSD-3-Clause
 repository-code: "https://github.com/diegovillanueva/pumas_limiter_update"
 authors:
