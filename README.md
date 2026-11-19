@@ -76,11 +76,8 @@ removed from comment lines).
 
 ## Changes
 
-- 1.0.2: requires PUMAS_interface_215 v1.1.1, which passes the ice
-  nucleation input `naai` to PUMAS as a tendency [1/kg/s] instead of a
-  number [1/kg]. The DustOnly-NieSing-PUMAS simulations were run with the
-  earlier interface, which overestimates ice nucleation in PUMAS. The
-  patches of this repository are unchanged.
+- 1.0.3: requires PUMAS_interface_215 v1.1.2, which passes the ice
+  nucleation term to PUMAS as a tendency.
 
 ## Citation
 
