@@ -79,10 +79,6 @@ removed from comment lines).
 Please cite this software via the Zenodo DOI of the release; the citation
 metadata are in `CITATION.cff`.
 
-## Versions and releases
-
-Release v1.0.2 of mg2_limiter_update and release v1.0.1 of PUMAS_interface_215 change only documentation and metadata; their code is identical to mg2_limiter_update v1.0.1 and PUMAS_interface_215 v1.0.0. Pins to those two code versions in this repository (`versions.env`, Usage) therefore remain valid.
-
 ## Related repositories
 
 - [mg2_limiter_update](https://github.com/diegovillanueva/mg2_limiter_update): droplet freezing limiter and microphysics switches for MG2 (CESM 2.1.5 default), with the run configurations.
