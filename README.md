@@ -52,18 +52,20 @@ files before submitting, or remove the `Nudge_*` entries for a free run.
 The simulations used the grid `f09_g17`, as in mg2_limiter_update. The
 namelist requests COSP fields, hence the `-cosp` build option.
 
-The namelist requests `CLD_CAL_TMPICE` and `CLD_CAL_TMPLIQ`. Stock
-`cam_cesm2_1_rel_60` writes these two fields swapped (ice in
-`CLD_CAL_TMPLIQ`); the fix is in the `cospsimulator_intr.F90` patch of
-[cam6_cosp_calipso_diag](https://github.com/diegovillanueva/cam6_cosp_calipso_diag).
-This repository does not include that fix, and cam6_cosp_calipso_diag is
-tested only with MG2, so swap the two fields when you analyse output of
-this patch set.
-
 The namelist sets `limfacdu = 0.051`, the value used in the original MG2
 runs and in these PUMAS simulations. mg2_limiter_update uses `0.05`, the
 value quoted in Villanueva et al. (in review); see its section
 "Differences from the original runs".
+
+## CALIPSO cloud-top phase fields
+
+Stock CAM 6 COSP (`cam_cesm2_1_rel_60`) writes `CLD_CAL_TMPLIQ` and
+`CLD_CAL_TMPICE` swapped: in COSP2 `lidarcldtmp` index 2 is ice and index 3
+is liquid, but stock CAM maps them the other way. This repository does not
+modify COSP, so runs built from it get swapped fields (the
+DustOnly-NieSing-PUMAS simulations included). Apply the fix from
+[cam6_cosp_calipso_diag](https://github.com/diegovillanueva/cam6_cosp_calipso_diag)
+or swap the two fields in post-processing.
 
 ## Validation
 
